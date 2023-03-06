@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8C1FEAF228ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF128ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift */; };
-		8C1FEAF428ECA8DF006BF71C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF328ECA8DF006BF71C /* ContentView.swift */; };
 		8C1FEAF628ECA8E1006BF71C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF528ECA8E1006BF71C /* Assets.xcassets */; };
 		8C1FEAF928ECA8E1006BF71C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF828ECA8E1006BF71C /* Preview Assets.xcassets */; };
 		8C1FEB0428ECA8E2006BF71C /* KCRW_MenuBar_PlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB0328ECA8E2006BF71C /* KCRW_MenuBar_PlayerTests.swift */; };
 		8C1FEB0E28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB0D28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift */; };
 		8C1FEB1028ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB0F28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift */; };
+		8C1FEB2028ECB209006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF128ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift */; };
+		8C1FEB2328ECB37F006BF71C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2228ECB37F006BF71C /* Song.swift */; };
+		8C1FEB2628ECB3BA006BF71C /* Webservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2528ECB3BA006BF71C /* Webservice.swift */; };
+		8C1FEB2928ECB459006BF71C /* SongListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2828ECB459006BF71C /* SongListViewModel.swift */; };
+		8C1FEB2C28ECB490006BF71C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2B28ECB490006BF71C /* Constants.swift */; };
+		8C1FEB2D28ECB5ED006BF71C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF328ECA8DF006BF71C /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +49,10 @@
 		8C1FEB0928ECA8E2006BF71C /* KCRW MenuBar PlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KCRW MenuBar PlayerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C1FEB0D28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KCRW_MenuBar_PlayerUITests.swift; sourceTree = "<group>"; };
 		8C1FEB0F28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KCRW_MenuBar_PlayerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		8C1FEB2228ECB37F006BF71C /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		8C1FEB2528ECB3BA006BF71C /* Webservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Webservice.swift; sourceTree = "<group>"; };
+		8C1FEB2828ECB459006BF71C /* SongListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongListViewModel.swift; sourceTree = "<group>"; };
+		8C1FEB2B28ECB490006BF71C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +103,10 @@
 		8C1FEAF028ECA8DF006BF71C /* KCRW MenuBar Player */ = {
 			isa = PBXGroup;
 			children = (
+				8C1FEB2A28ECB483006BF71C /* Utils */,
+				8C1FEB2728ECB449006BF71C /* View Models */,
+				8C1FEB2428ECB3A9006BF71C /* Services */,
+				8C1FEB2128ECB370006BF71C /* Model */,
 				8C1FEAF128ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift */,
 				8C1FEAF328ECA8DF006BF71C /* ContentView.swift */,
 				8C1FEAF528ECA8E1006BF71C /* Assets.xcassets */,
@@ -129,6 +141,38 @@
 			path = "KCRW MenuBar PlayerUITests";
 			sourceTree = "<group>";
 		};
+		8C1FEB2128ECB370006BF71C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8C1FEB2228ECB37F006BF71C /* Song.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8C1FEB2428ECB3A9006BF71C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8C1FEB2528ECB3BA006BF71C /* Webservice.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8C1FEB2728ECB449006BF71C /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				8C1FEB2828ECB459006BF71C /* SongListViewModel.swift */,
+			);
+			path = "View Models";
+			sourceTree = "<group>";
+		};
+		8C1FEB2A28ECB483006BF71C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				8C1FEB2B28ECB490006BF71C /* Constants.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -145,6 +189,8 @@
 			dependencies = (
 			);
 			name = "KCRW MenuBar Player";
+			packageProductDependencies = (
+			);
 			productName = "KCRW MenuBar Player";
 			productReference = 8C1FEAEE28ECA8DF006BF71C /* KCRW MenuBar Player.app */;
 			productType = "com.apple.product-type.application";
@@ -193,7 +239,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1400;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					8C1FEAED28ECA8DF006BF71C = {
 						CreatedOnToolsVersion = 14.0.1;
@@ -217,6 +263,8 @@
 				Base,
 			);
 			mainGroup = 8C1FEAE528ECA8DF006BF71C;
+			packageReferences = (
+			);
 			productRefGroup = 8C1FEAEF28ECA8DF006BF71C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -259,8 +307,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C1FEAF428ECA8DF006BF71C /* ContentView.swift in Sources */,
-				8C1FEAF228ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */,
+				8C1FEB2028ECB209006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */,
+				8C1FEB2628ECB3BA006BF71C /* Webservice.swift in Sources */,
+				8C1FEB2D28ECB5ED006BF71C /* ContentView.swift in Sources */,
+				8C1FEB2328ECB37F006BF71C /* Song.swift in Sources */,
+				8C1FEB2928ECB459006BF71C /* SongListViewModel.swift in Sources */,
+				8C1FEB2C28ECB490006BF71C /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +382,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -347,9 +400,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				INFOPLIST_KEY_LSUIElement = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -390,6 +445,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -401,9 +457,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				INFOPLIST_KEY_LSUIElement = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -413,22 +471,27 @@
 		8C1FEB1428ECA8E2006BF71C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "KCRW Player";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "KCRW MenuBar Player/KCRW_MenuBar_Player.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"KCRW MenuBar Player/Preview Content\"";
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Jonathan-David-Johnson.KCRW-MenuBar-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -443,19 +506,24 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "KCRW MenuBar Player/KCRW_MenuBar_Player.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"KCRW MenuBar Player/Preview Content\"";
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Jonathan-David-Johnson.KCRW-MenuBar-Player";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -471,8 +539,10 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Jonathan-David-Johnson.KCRW-MenuBar-PlayerTests";
@@ -490,8 +560,10 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Jonathan-David-Johnson.KCRW-MenuBar-PlayerTests";
@@ -508,6 +580,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -525,6 +598,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = X6DVXL53Z3;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
