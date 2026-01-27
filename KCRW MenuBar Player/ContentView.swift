@@ -63,6 +63,7 @@ struct ContentView: View {
                         togglePlayback()
                     }) {
                         Image(systemName: vm.isPlaying ? "stop.fill" : "play.fill")
+                            .font(.system(size: 10))
                     }
                     Button("Quit") {
                         NSApplication.shared.terminate(nil)

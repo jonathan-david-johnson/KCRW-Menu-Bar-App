@@ -44,13 +44,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         if let statusButton = statusItem.button {
             print("🎵 KCRW App: Status button exists, setting image")
-            if let image = NSImage(named: "KCRW_logo_black") {
-                let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
+            if let image = NSImage(named: "KCRW_logo_white") {
+                let resizedImage = NSImage(size: NSSize(width: image.size.width * 1, height: image.size.height * 1))
                 resizedImage.lockFocus()
                 image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
                 resizedImage.unlockFocus()
                 statusButton.image = resizedImage
-                print("🎵 KCRW App: Image loaded and resized to 50%")
+                print("🎵 KCRW App: Image loaded and resized to 25%")
             }
             statusButton.title = ""
             print("🎵 KCRW App: Image set: \(statusButton.image != nil)")
@@ -178,8 +178,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             self.songName = "";
             statusItem.button!.title = ""
             statusItem.button!.attributedTitle = NSAttributedString(string: "")
-            if let image = NSImage(named: "KCRW_logo_black") {
-                let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
+            if let image = NSImage(named: "KCRW_logo_white") {
+                let resizedImage = NSImage(size: NSSize(width: image.size.width * 1, height: image.size.height * 1))
                 resizedImage.lockFocus()
                 image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
                 resizedImage.unlockFocus()
