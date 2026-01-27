@@ -49,6 +49,12 @@ struct ContentView: View {
                     
                     Spacer()
                     
+                    if selectedStream == .npr {
+                        Button(action: {
+                            skipForward()
+                        }) { Text(">") }
+                    }
+                    
                     Button(action: {
                         vm.isPlaying = false
                         vm.audioPlayer.replaceCurrentItem(with: nil)
@@ -230,6 +236,12 @@ struct ContentView: View {
         } catch {
             print("Error fetching NPR News: \(error)")
         }
+    }
+    
+    private func skipForward() {
+        let currentTime = vm.audioPlayer.currentTime()
+        let newTime = CMTimeAdd(currentTime, CMTime(seconds: 10, preferredTimescale: 1))
+        vm.audioPlayer.seek(to: newTime)
     }
 }
 
