@@ -112,6 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
     }
     
+    @MainActor
     func scrollThroughSongTitle() async {
         guard !songName.isEmpty else { return }
         
@@ -178,6 +179,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 } else {
                     self.songName = self.songListVM.kexpSongs[0].artist
                 }
+            } else if currentStream == "npr" {
+                self.songName = "NPR News Now"
             }
             statusItem.button!.image = nil
         } else {

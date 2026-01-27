@@ -20,6 +20,7 @@ struct ContentView: View {
     enum Station {
         case kcrw
         case kexp
+        case npr
     }
     
 //    @State var isPlaying = false
@@ -43,6 +44,7 @@ struct ContentView: View {
                     Picker("Stream", selection: $selectedStream) {
                         Text("KCRW").tag(Station.kcrw)
                         Text("KEXP").tag(Station.kexp)
+                        Text("NPR").tag(Station.npr)
                     }
                     .pickerStyle(.menu)
                     .frame(minWidth: 80)
@@ -171,29 +173,63 @@ struct ContentView: View {
                             }
                         }
                     }
+                
+                case .npr:
+                    Text("NPR News Now")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
     }
     
     private func switchStream(to station: Station) {
-        let streamURL: URL?
         let streamName: String
         switch station {
         case .kcrw:
-            streamURL = Constants.Urls.kcrwStream
             streamName = "kcrw"
+            if let url = Constants.Urls.kcrwStream {
+                let playerItem = AVPlayerItem(url: url)
+                vm.audioPlayer.replaceCurrentItem(with: playerItem)
+                vm.audioPlayer.play()
+            }
         case .kexp:
-            streamURL = Constants.Urls.kexpStream
             streamName = "kexp"
+            if let url = Constants.Urls.kexpStream {
+                let playerItem = AVPlayerItem(url: url)
+                vm.audioPlayer.replaceCurrentItem(with: playerItem)
+                vm.audioPlayer.play()
+            }
+        case .npr:
+            streamName = "npr"
+            Task {
+                await playLatestNPRNews()
+            }
         }
         
         onStreamChange?(streamName)
-        
-        if let url = streamURL {
-            let playerItem = AVPlayerItem(url: url)
-            vm.audioPlayer.replaceCurrentItem(with: playerItem)
-            vm.audioPlayer.play()
+    }
+    
+    private func playLatestNPRNews() async {
+        do {
+            let url = URL(string: "https://feeds.npr.org/500005/podcast.xml")!
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            if let xmlString = String(data: data, encoding: .utf8),
+               let enclosureStart = xmlString.range(of: "<enclosure"),
+               let urlStart = xmlString[enclosureStart.lowerBound...].range(of: "url=\""),
+               let urlEnd = xmlString[urlStart.upperBound...].range(of: "\"") {
+                
+                let audioURLString = String(xmlString[urlStart.upperBound..<urlEnd.lowerBound])
+                if let audioURL = URL(string: audioURLString) {
+                    let playerItem = AVPlayerItem(url: audioURL)
+                    await MainActor.run {
+                        vm.audioPlayer.replaceCurrentItem(with: playerItem)
+                        vm.audioPlayer.play()
+                    }
+                }
+            }
+        } catch {
+            print("Error fetching NPR News: \(error)")
         }
     }
 }
