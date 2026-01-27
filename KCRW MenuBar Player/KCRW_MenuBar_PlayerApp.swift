@@ -14,26 +14,10 @@ struct KCRW_MenuBar_PlayerApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     
-        @State var currentNumber: String = "1"
     var body: some Scene {
-//        WindowGroup {
-//            ContentView(vm: SongListViewModel())
-//        }
-        
-        
-        MenuBarExtra(currentNumber, systemImage: "") {
-        
-                           // 3
-                   Button("One") {
-                       currentNumber = "1"
-                   }
-                   Button("Two") {
-                       currentNumber = "2"
-                   }
-                   Button("Three") {
-                       currentNumber = "3"
-                   }
-               }
+        Settings {
+            EmptyView()
+        }
     }
 }
 
@@ -50,12 +34,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     @MainActor
     func applicationDidFinishLaunching(_ notification: Notification) {
+        print("🎵 KCRW App: applicationDidFinishLaunching called")
     
         self.songListVM = SongListViewModel()
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem = NSStatusBar.system.statusItem(withLength: 60)
+        print("🎵 KCRW App: Status item created: \(statusItem != nil)")
         
         if let statusButton = statusItem.button {
-            statusButton.image = NSImage(named: "KCRW_logo_black")
+            print("🎵 KCRW App: Status button exists, setting image")
+            let image = NSImage(named: "KCRW_logo_black")
+            print("🎵 KCRW App: Image loaded: \(image != nil)")
+            statusButton.image = image
+            statusButton.title = "KCRW" // Fallback text
+            print("🎵 KCRW App: Button title set to: \(statusButton.title)")
+            print("🎵 KCRW App: Image set: \(statusButton.image != nil)")
             
             statusButton.action = #selector(togglePopover)
             
@@ -67,28 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         
         func scrollThroughSongTitle() async {
-           /* let snipitOfName:String;
-            if (songName.count < songNameLengthLimit) {
-                snipitOfName = songName
-            }
-            else {
-                let rangeStart = songName.index(songName.startIndex, offsetBy: songNameScrollIndex)
-                let rangeEnd = songName.index(songName.startIndex, offsetBy: songNameScrollIndex + songNameLengthLimit)
-
-                snipitOfName = String(songName[rangeStart..<rangeEnd])
-            }
-
-            if (songNameScrollIndex + songNameLengthLimit == songName.count) {
-                songNameScrollIndex = 0
-            } else {
-                songNameScrollIndex = songNameScrollIndex + 1
-            }
-            statusItem.button!.title = snipitOfName;
-
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            await scrollThroughSongTitle()
-            */
-            statusItem.button!.title = songName;
+            statusItem.button!.title = songName
         }
         
         func updateRegularly() async {

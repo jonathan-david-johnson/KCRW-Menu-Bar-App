@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific
+xcuserdata/
+*.xcuserstate
+project.xcworkspace/xcuserdata/
+
+# Backup folders
+**/KCRW MenuBar Player 2026-*/
