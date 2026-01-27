@@ -48,13 +48,29 @@ struct ContentView: View {
                                 Text(song.album).opacity(0.4)
                             }
                             Spacer()
-                            AsyncImage(url: URL(string: song.albumImage)) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 50)
-                            } placeholder: {
-                                Color.clear.frame(width: 50, height: 50)
+                            AsyncImage(url: URL(string: song.albumImage)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100)
+                                case .failure, .empty:
+                                    ZStack {
+                                        Color.gray.opacity(0.2)
+                                        Text("Go to Spotify")
+                                            .font(.caption2)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    .frame(width: 100, height: 100)
+                                @unknown default:
+                                    Color.clear.frame(width: 100, height: 100)
+                                }
+                            }
+                            .onTapGesture {
+                                if let spotifyURL = URL(string: song.affiliateLinkSpotify) {
+                                    NSWorkspace.shared.open(spotifyURL)
+                                }
                             }
                         }
                     }
