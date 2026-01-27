@@ -100,11 +100,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             } else {
                 if (!songListVM.isPlaying) {
                     self.songListVM.isPlaying = true
-//                    self.songListVM.audioPlayer.play()
-                    let playerItem = AVPlayerItem(url: Constants.Urls.kcrwStream!)
-                    self.songListVM.audioPlayer = AVPlayer(playerItem: playerItem)
-                    self.songListVM.audioPlayer.play()
-                    updateMenuBar()
+                    // Stream will be started by ContentView based on selectedStream
                 }
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
             }

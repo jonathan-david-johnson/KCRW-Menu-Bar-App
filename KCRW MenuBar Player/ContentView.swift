@@ -29,11 +29,6 @@ struct ContentView: View {
         self._vm = StateObject(wrappedValue: vm)
         self.onStop = onStop
         self.onStreamChange = onStreamChange
-        
-        do {
-            let playerItem = AVPlayerItem(url: Constants.Urls.kcrwStream!)
-            vm.audioPlayer = AVPlayer(playerItem: playerItem)
-        }
     }
     
     var body: some View {
@@ -178,6 +173,10 @@ struct ContentView: View {
                     Text("NPR News Now")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+            }
+            .onAppear {
+                // Start playing the selected stream when view appears
+                switchStream(to: selectedStream)
             }
         }
     }
