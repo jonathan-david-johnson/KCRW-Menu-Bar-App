@@ -39,16 +39,22 @@ struct ContentView: View {
                     }.keyboardShortcut("q")
                 }
 
-                List(vm.songs, id: \.play_id) { song in
-                    HStack(alignment: .center) {
-                        VStack(alignment: .leading) {
-                            Text(song.title).fontWeight(.semibold)
-                            Text(song.artist).opacity(0.4)
-                            Text(song.album).opacity(0.4)
-                            Divider()
+                ScrollViewReader { proxy in
+                    List(vm.songs, id: \.play_id) { song in
+                        HStack(alignment: .center) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(song.title).fontWeight(.semibold)
+                                Text(song.artist).opacity(0.4)
+                                Text(song.album).opacity(0.4)
+                            }
+                         //   AsyncImage(url: URL(string: song.albumImage)).frame(width: 15, height: 15)
+                            Spacer()
                         }
-//                        AsyncImage(url: URL(string: song.albumImage)).frame(width: 15, height: 15)
-                        Spacer()
+                    }
+                    .onAppear {
+                        if let firstSong = vm.songs.first {
+                            proxy.scrollTo(firstSong.play_id, anchor: .top)
+                        }
                     }
                 }
             }

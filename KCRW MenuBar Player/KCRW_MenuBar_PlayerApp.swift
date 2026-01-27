@@ -42,9 +42,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         if let statusButton = statusItem.button {
             print("🎵 KCRW App: Status button exists, setting image")
-            let image = NSImage(named: "KCRW_logo_black")
-            print("🎵 KCRW App: Image loaded: \(image != nil)")
-            statusButton.image = image
+            if let image = NSImage(named: "KCRW_logo_black") {
+                let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
+                resizedImage.lockFocus()
+                image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
+                resizedImage.unlockFocus()
+                statusButton.image = resizedImage
+                print("🎵 KCRW App: Image loaded and resized to 50%")
+            }
             statusButton.title = "KCRW" // Fallback text
             print("🎵 KCRW App: Button title set to: \(statusButton.title)")
             print("🎵 KCRW App: Image set: \(statusButton.image != nil)")
@@ -59,10 +64,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         
         func scrollThroughSongTitle() async {
-            statusItem.button!.title = songName
+            if let button = statusItem.button {
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = .center
+                
+                let attributes: [NSAttributedString.Key: Any] = [
+                    .font: NSFont.systemFont(ofSize: 10),
+                    .paragraphStyle: paragraphStyle,
+                    .baselineOffset: 0
+                ]
+                
+                button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
+            }
         }
         
         func updateRegularly() async {
+            print("🎵 KCRW App: Updating song list...")
             await self.songListVM.populateSongs()
             
             if (self.songListVM.isPlaying && !self.songListVM.songs.isEmpty) {
@@ -75,7 +92,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 statusItem.button!.image = nil
             } else {
                 self.songName = "";
-                statusItem.button!.image = NSImage(named: "KCRW_logo_black")
+                if let image = NSImage(named: "KCRW_logo_black") {
+                    let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
+                    resizedImage.lockFocus()
+                    image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
+                    resizedImage.unlockFocus()
+                    statusItem.button!.image = resizedImage
+                }
             }
             
             Task {
