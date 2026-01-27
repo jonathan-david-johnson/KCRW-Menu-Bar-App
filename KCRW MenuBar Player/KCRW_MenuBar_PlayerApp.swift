@@ -63,7 +63,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             self.popover.contentViewController = NSHostingController(rootView: ContentView(
                 vm: self.songListVM,
                 onStop: { [weak self] in
-                    self?.popover.performClose(nil)
                     self?.updateMenuBar()
                 },
                 onStreamChange: { [weak self] stream in
@@ -98,10 +97,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             if popover.isShown {
                 self.popover.performClose(nil)
             } else {
-                if (!songListVM.isPlaying) {
-                    self.songListVM.isPlaying = true
-                    // Stream will be started by ContentView based on selectedStream
-                }
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
             }
         }

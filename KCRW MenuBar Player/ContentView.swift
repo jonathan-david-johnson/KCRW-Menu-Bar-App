@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var selectedStation: Station = .kcrw
     @State private var selectedStream: Station = .kcrw
     @State private var timeRemaining: String = "0:00"
+    @State private var hasAppeared: Bool = false
     var onStop: (() -> Void)?
     var onStreamChange: ((String) -> Void)?
     
@@ -33,11 +34,9 @@ struct ContentView: View {
     }
     
     var body: some View {
-        
-        if (vm.isPlaying) {
-            VStack(alignment: .center, spacing: 0) {
-                HStack(alignment: .center) {
-                    Picker("", selection: $selectedStream) {
+        VStack(alignment: .center, spacing: 0) {
+            HStack(alignment: .center) {
+                Picker("", selection: $selectedStream) {
                         Text("KCRW").tag(Station.kcrw)
                         Text("KEXP").tag(Station.kexp)
                         Text("NPR").tag(Station.npr)
@@ -61,10 +60,10 @@ struct ContentView: View {
                     }
                     
                     Button(action: {
-                        vm.isPlaying = false
-                        vm.audioPlayer.replaceCurrentItem(with: nil)
-                        onStop?()
-                    }) { Text("Stop") }
+                        togglePlayback()
+                    }) {
+                        Image(systemName: vm.isPlaying ? "stop.fill" : "play.fill")
+                    }
                     Button("Quit") {
                         NSApplication.shared.terminate(nil)
                     }.keyboardShortcut("q")
@@ -186,10 +185,12 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                // Start playing the selected stream when view appears
-                switchStream(to: selectedStream)
+                if !hasAppeared {
+                    hasAppeared = true
+                    vm.isPlaying = true
+                    switchStream(to: selectedStream)
+                }
             }
-        }
     }
     
     private func switchStream(to station: Station) {
@@ -273,6 +274,17 @@ struct ContentView: View {
         } else {
             timeRemaining = "0:00"
         }
+    }
+    
+    private func togglePlayback() {
+        if vm.isPlaying {
+            vm.isPlaying = false
+            vm.audioPlayer.replaceCurrentItem(with: nil)
+        } else {
+            vm.isPlaying = true
+            switchStream(to: selectedStream)
+        }
+        onStop?()
     }
 }
 
