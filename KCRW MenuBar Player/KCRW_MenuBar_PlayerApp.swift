@@ -64,105 +64,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 vm: self.songListVM,
                 onStop: { [weak self] in
                     self?.popover.performClose(nil)
+                    self?.updateMenuBar()
                 },
                 onStreamChange: { [weak self] stream in
                     self?.currentStream = stream
+                    self?.updateMenuBar()
                 }
             ))
         }
         
-        
-        func scrollThroughSongTitle() async {
-            guard !songName.isEmpty else { return }
-            
-            if let button = statusItem.button {
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.alignment = .center
-                paragraphStyle.lineBreakMode = .byTruncatingTail
-                
-                let attributes: [NSAttributedString.Key: Any] = [
-                    .font: NSFont.systemFont(ofSize: 10),
-                    .paragraphStyle: paragraphStyle,
-                    .baselineOffset: 0
-                ]
-                
-                // If 9 chars or less, just show it
-                if songName.count <= 9 {
-                    button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
-                    return
-                }
-                
-                // Convert to array of characters for proper Unicode handling
-                let characters = Array(songName)
-                let maxIndex = characters.count - 9
-                
-                for i in 0...maxIndex {
-                    // Check if task was cancelled
-                    if Task.isCancelled { return }
-                    
-                    let substring = String(characters[i..<(i+9)])
-                    
-                    button.attributedTitle = NSAttributedString(string: substring, attributes: attributes)
-                    
-                    // Hold at the start for 1 second before scrolling
-                    if i == 0 {
-                        try? await Task.sleep(nanoseconds: 1_000_000_000)
-                    } else {
-                        try? await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
-                    }
-                }
-                
-                // Hold at the end for 1 second
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                
-                // Check if task was cancelled before restarting
-                if !Task.isCancelled {
-                    await scrollThroughSongTitle()
-                }
-            }
-        }
         
         func updateRegularly() async {
             print("🎵 KCRW App: Updating song list...")
             await self.songListVM.populateSongs()
             await self.songListVM.populateKEXPSongs()
             
-            if (self.songListVM.isPlaying) {
-                if currentStream == "kcrw" && !self.songListVM.songs.isEmpty {
-                    if (self.songListVM.songs[0].title != "") {
-                        let song = self.songListVM.songs[0]
-                        self.songName = song.title + " by " + song.artist
-                    } else {
-                        self.songName = self.songListVM.songs[0].artist
-                    }
-                } else if currentStream == "kexp" && !self.songListVM.kexpSongs.isEmpty {
-                    if (self.songListVM.kexpSongs[0].title != "") {
-                        let song = self.songListVM.kexpSongs[0]
-                        self.songName = song.title + " by " + song.artist
-                    } else {
-                        self.songName = self.songListVM.kexpSongs[0].artist
-                    }
-                }
-                statusItem.button!.image = nil
-            } else {
-                self.songName = "";
-                statusItem.button!.title = ""
-                statusItem.button!.attributedTitle = NSAttributedString(string: "")
-                if let image = NSImage(named: "KCRW_logo_black") {
-                    let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
-                    resizedImage.lockFocus()
-                    image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
-                    resizedImage.unlockFocus()
-                    statusItem.button!.image = resizedImage
-                }
-            }
-            
-            // Cancel previous scroll task before starting a new one
-            scrollTask?.cancel()
-            scrollTask = Task {
-                songNameScrollIndex = 0
-                await scrollThroughSongTitle();
-            }
+            updateMenuBar()
             
             try? await Task.sleep(nanoseconds: 30_000_000_000)
             await updateRegularly()
@@ -187,11 +104,101 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                     let playerItem = AVPlayerItem(url: Constants.Urls.kcrwStream!)
                     self.songListVM.audioPlayer = AVPlayer(playerItem: playerItem)
                     self.songListVM.audioPlayer.play()
+                    updateMenuBar()
                 }
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
             }
         }
         
+    }
+    
+    func scrollThroughSongTitle() async {
+        guard !songName.isEmpty else { return }
+        
+        if let button = statusItem.button {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 10),
+                .paragraphStyle: paragraphStyle,
+                .baselineOffset: 0
+            ]
+            
+            // If 9 chars or less, just show it
+            if songName.count <= 9 {
+                button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
+                return
+            }
+            
+            // Scroll through the text
+            let maxIndex = songName.count - 9
+            for i in 0...maxIndex {
+                // Check if task was cancelled
+                if Task.isCancelled { return }
+                
+                let startIndex = songName.index(songName.startIndex, offsetBy: i)
+                let endIndex = songName.index(startIndex, offsetBy: 9)
+                let substring = String(songName[startIndex..<endIndex])
+                
+                button.attributedTitle = NSAttributedString(string: substring, attributes: attributes)
+                
+                // Hold at the start for 1 second before scrolling
+                if i == 0 {
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                } else {
+                    try? await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
+                }
+            }
+            
+            // Hold at the end for 1 second
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            // Check if task was cancelled before restarting
+            if !Task.isCancelled {
+                await scrollThroughSongTitle()
+            }
+        }
+    }
+    
+    @MainActor
+    func updateMenuBar() {
+        if (self.songListVM.isPlaying) {
+            if currentStream == "kcrw" && !self.songListVM.songs.isEmpty {
+                if (self.songListVM.songs[0].title != "") {
+                    let song = self.songListVM.songs[0]
+                    self.songName = song.title + " by " + song.artist
+                } else {
+                    self.songName = self.songListVM.songs[0].artist
+                }
+            } else if currentStream == "kexp" && !self.songListVM.kexpSongs.isEmpty {
+                if (self.songListVM.kexpSongs[0].title != "") {
+                    let song = self.songListVM.kexpSongs[0]
+                    self.songName = song.title + " by " + song.artist
+                } else {
+                    self.songName = self.songListVM.kexpSongs[0].artist
+                }
+            }
+            statusItem.button!.image = nil
+        } else {
+            self.songName = "";
+            statusItem.button!.title = ""
+            statusItem.button!.attributedTitle = NSAttributedString(string: "")
+            if let image = NSImage(named: "KCRW_logo_black") {
+                let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
+                resizedImage.lockFocus()
+                image.draw(in: NSRect(origin: .zero, size: resizedImage.size))
+                resizedImage.unlockFocus()
+                statusItem.button!.image = resizedImage
+            }
+        }
+        
+        // Cancel previous scroll task and start new one
+        scrollTask?.cancel()
+        scrollTask = Task {
+            songNameScrollIndex = 0
+            await scrollThroughSongTitle()
+        }
     }
     
 }
