@@ -69,6 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             if let button = statusItem.button {
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .center
+                paragraphStyle.lineBreakMode = .byTruncatingTail
                 
                 let attributes: [NSAttributedString.Key: Any] = [
                     .font: NSFont.systemFont(ofSize: 10),
@@ -82,15 +83,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                     return
                 }
                 
-                // Scroll through the text
-                let maxIndex = songName.count - 9
+                // Convert to array of characters for proper Unicode handling
+                let characters = Array(songName)
+                let maxIndex = characters.count - 9
+                
                 for i in 0...maxIndex {
                     // Check if task was cancelled
                     if Task.isCancelled { return }
                     
-                    let startIndex = songName.index(songName.startIndex, offsetBy: i)
-                    let endIndex = songName.index(startIndex, offsetBy: 9)
-                    let substring = String(songName[startIndex..<endIndex])
+                    let substring = String(characters[i..<(i+9)])
                     
                     button.attributedTitle = NSAttributedString(string: substring, attributes: attributes)
                     

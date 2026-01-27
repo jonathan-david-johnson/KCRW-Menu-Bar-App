@@ -74,6 +74,11 @@ struct ContentView: View {
                             }
                         }
                     }
+                    .onChange(of: vm.songs) { _ in
+                        if let firstSong = vm.songs.first {
+                            proxy.scrollTo(firstSong.play_id, anchor: .top)
+                        }
+                    }
                     .onAppear {
                         if let firstSong = vm.songs.first {
                             proxy.scrollTo(firstSong.play_id, anchor: .top)

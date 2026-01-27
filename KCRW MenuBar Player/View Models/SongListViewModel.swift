@@ -28,11 +28,15 @@ class SongListViewModel: ObservableObject {
 }
 
 
-struct SongViewModel {
+struct SongViewModel: Equatable {
     private var song: Song
     
     init(song: Song) {
         self.song = song
+    }
+    
+    static func == (lhs: SongViewModel, rhs: SongViewModel) -> Bool {
+        return lhs.play_id == rhs.play_id
     }
     
     var affiliateLinkSpotify: String {
