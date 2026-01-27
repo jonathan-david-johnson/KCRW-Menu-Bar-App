@@ -47,8 +47,15 @@ struct ContentView: View {
                                 Text(song.artist).opacity(0.4)
                                 Text(song.album).opacity(0.4)
                             }
-                         //   AsyncImage(url: URL(string: song.albumImage)).frame(width: 15, height: 15)
                             Spacer()
+                            AsyncImage(url: URL(string: song.albumImage)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 50)
+                            } placeholder: {
+                                Color.clear.frame(width: 50, height: 50)
+                            }
                         }
                     }
                     .onAppear {

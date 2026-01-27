@@ -31,6 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     private var songNameLengthLimit: Int = 20
     private var songNameScrollIndex: Int = 0
     private var isScrollingSongTitle: Bool = false
+    private var scrollTask: Task<Void, Never>?
     
     @MainActor
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -84,6 +85,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 // Scroll through the text
                 let maxIndex = songName.count - 9
                 for i in 0...maxIndex {
+                    // Check if task was cancelled
+                    if Task.isCancelled { return }
+                    
                     let startIndex = songName.index(songName.startIndex, offsetBy: i)
                     let endIndex = songName.index(startIndex, offsetBy: 9)
                     let substring = String(songName[startIndex..<endIndex])
@@ -101,8 +105,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 // Hold at the end for 1 second
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 
-                // Restart the scroll
-                await scrollThroughSongTitle()
+                // Check if task was cancelled before restarting
+                if !Task.isCancelled {
+                    await scrollThroughSongTitle()
+                }
             }
         }
         
@@ -129,7 +135,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 }
             }
             
-            Task {
+            // Cancel previous scroll task before starting a new one
+            scrollTask?.cancel()
+            scrollTask = Task {
                 songNameScrollIndex = 0
                 await scrollThroughSongTitle();
             }
