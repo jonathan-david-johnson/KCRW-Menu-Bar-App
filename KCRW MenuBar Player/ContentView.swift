@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject private var vm: SongListViewModel
     @State private var selectedStation: Station = .kcrw
     @State private var selectedStream: Station = .kcrw
+    @State private var timeRemaining: String = "0:00"
     var onStop: (() -> Void)?
     var onStreamChange: ((String) -> Void)?
     
@@ -36,13 +37,14 @@ struct ContentView: View {
         if (vm.isPlaying) {
             VStack(alignment: .center, spacing: 0) {
                 HStack(alignment: .center) {
-                    Picker("Stream", selection: $selectedStream) {
+                    Picker("", selection: $selectedStream) {
                         Text("KCRW").tag(Station.kcrw)
                         Text("KEXP").tag(Station.kexp)
                         Text("NPR").tag(Station.npr)
                     }
                     .pickerStyle(.menu)
-                    .frame(minWidth: 80)
+                    .labelsHidden()
+                    .frame(minWidth: 100)
                     .onChange(of: selectedStream) { newStream in
                         switchStream(to: newStream)
                     }
@@ -52,7 +54,10 @@ struct ContentView: View {
                     if selectedStream == .npr {
                         Button(action: {
                             skipForward()
-                        }) { Text(">") }
+                        }) { Text(timeRemaining) }
+                        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
+                            updateTimeRemaining()
+                        }
                     }
                     
                     Button(action: {
@@ -242,6 +247,32 @@ struct ContentView: View {
         let currentTime = vm.audioPlayer.currentTime()
         let newTime = CMTimeAdd(currentTime, CMTime(seconds: 10, preferredTimescale: 1))
         vm.audioPlayer.seek(to: newTime)
+    }
+    
+    private func updateTimeRemaining() {
+        guard let currentItem = vm.audioPlayer.currentItem else {
+            timeRemaining = "0:00"
+            return
+        }
+        
+        let duration = currentItem.duration
+        let currentTime = vm.audioPlayer.currentTime()
+        
+        guard duration.isValid && !duration.isIndefinite else {
+            timeRemaining = "0:00"
+            return
+        }
+        
+        let remaining = CMTimeSubtract(duration, currentTime)
+        let seconds = Int(CMTimeGetSeconds(remaining))
+        
+        if seconds >= 0 {
+            let minutes = seconds / 60
+            let secs = seconds % 60
+            timeRemaining = String(format: "%d:%02d", minutes, secs)
+        } else {
+            timeRemaining = "0:00"
+        }
     }
 }
 
