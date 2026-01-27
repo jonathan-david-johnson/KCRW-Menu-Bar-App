@@ -17,11 +17,29 @@ class SongListViewModel: ObservableObject {
     @Published var kexpSongs: [KEXPSongViewModel] = []
     @Published var audioPlayer: AVPlayer = AVPlayer();
     
+    private var kcrwInitialLoad = true
+    private var kexpInitialLoad = true
+    
     func populateSongs() async {
-        
         do {
-            let songsResp = try await Webservice().getSongs(url: Constants.Urls.latestSongs!)
-            self.songs = songsResp.map(SongViewModel.init);
+            let pageSize = kcrwInitialLoad ? 10 : 1
+            let url = URL(string: "https://tracklist-api.kcrw.com/Music/all/1?page_size=\(pageSize)")!
+            let songsResp = try await Webservice().getSongs(url: url)
+            
+            if kcrwInitialLoad {
+                self.songs = songsResp.map(SongViewModel.init)
+                kcrwInitialLoad = false
+            } else if !songsResp.isEmpty {
+                let newSong = SongViewModel(song: songsResp[0])
+                // Only add if it's actually new (different play_id)
+                if songs.isEmpty || newSong.play_id != songs[0].play_id {
+                    self.songs.insert(newSong, at: 0)
+                    // Keep only 10 tracks
+                    if self.songs.count > 10 {
+                        self.songs.removeLast()
+                    }
+                }
+            }
         } catch {
             print(error)
         }
@@ -29,8 +47,24 @@ class SongListViewModel: ObservableObject {
     
     func populateKEXPSongs() async {
         do {
-            let songsResp = try await Webservice().getKEXPSongs(url: Constants.Urls.kexpPlays!)
-            self.kexpSongs = songsResp.map(KEXPSongViewModel.init);
+            let pageSize = kexpInitialLoad ? 10 : 1
+            let url = URL(string: "https://api.kexp.org/v2/plays/?limit=\(pageSize)")!
+            let songsResp = try await Webservice().getKEXPSongs(url: url)
+            
+            if kexpInitialLoad {
+                self.kexpSongs = songsResp.map(KEXPSongViewModel.init)
+                kexpInitialLoad = false
+            } else if !songsResp.isEmpty {
+                let newSong = KEXPSongViewModel(song: songsResp[0])
+                // Only add if it's actually new (different id)
+                if kexpSongs.isEmpty || newSong.id != kexpSongs[0].id {
+                    self.kexpSongs.insert(newSong, at: 0)
+                    // Keep only 10 tracks
+                    if self.kexpSongs.count > 10 {
+                        self.kexpSongs.removeLast()
+                    }
+                }
+            }
         } catch {
             print(error)
         }
