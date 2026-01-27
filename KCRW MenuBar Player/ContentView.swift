@@ -12,13 +12,22 @@ import AVFoundation
 struct ContentView: View {
     
     @StateObject private var vm: SongListViewModel
+    @State private var selectedStation: Station = .kcrw
+    @State private var selectedStream: Station = .kcrw
     var onStop: (() -> Void)?
+    var onStreamChange: ((String) -> Void)?
+    
+    enum Station {
+        case kcrw
+        case kexp
+    }
     
 //    @State var isPlaying = false
     
-    init(vm: SongListViewModel, onStop: (() -> Void)? = nil) {
+    init(vm: SongListViewModel, onStop: (() -> Void)? = nil, onStreamChange: ((String) -> Void)? = nil) {
         self._vm = StateObject(wrappedValue: vm)
         self.onStop = onStop
+        self.onStreamChange = onStreamChange
         
         do {
             let playerItem = AVPlayerItem(url: Constants.Urls.kcrwStream!)
@@ -29,9 +38,20 @@ struct ContentView: View {
     var body: some View {
         
         if (vm.isPlaying) {
-            VStack(alignment: .center) {
-                Spacer()
+            VStack(alignment: .center, spacing: 0) {
                 HStack(alignment: .center) {
+                    Picker("Stream", selection: $selectedStream) {
+                        Text("KCRW").tag(Station.kcrw)
+                        Text("KEXP").tag(Station.kexp)
+                    }
+                    .pickerStyle(.menu)
+                    .frame(minWidth: 80)
+                    .onChange(of: selectedStream) { newStream in
+                        switchStream(to: newStream)
+                    }
+                    
+                    Spacer()
+                    
                     Button(action: {
                         vm.isPlaying = false
                         vm.audioPlayer.replaceCurrentItem(with: nil)
@@ -41,8 +61,20 @@ struct ContentView: View {
                         NSApplication.shared.terminate(nil)
                     }.keyboardShortcut("q")
                 }
-
-                ScrollViewReader { proxy in
+                .padding(.top, 8)
+                .padding(.horizontal, 8)
+                
+                Picker("Station", selection: $selectedStation) {
+                    Text("KCRW").tag(Station.kcrw)
+                    Text("KEXP").tag(Station.kexp)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                
+                switch selectedStation {
+                case .kcrw:
+                    ScrollViewReader { proxy in
                     List(vm.songs, id: \.play_id) { song in
                         HStack(alignment: .center) {
                             VStack(alignment: .leading, spacing: 2) {
@@ -88,7 +120,80 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                case .kexp:
+                    ScrollViewReader { proxy in
+                        List(vm.kexpSongs, id: \.id) { song in
+                            HStack(alignment: .center) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(song.title).fontWeight(.semibold)
+                                    Text(song.artist).opacity(0.4)
+                                    Text(song.album).opacity(0.4)
+                                }
+                                Spacer()
+                                AsyncImage(url: URL(string: song.albumImage)) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100)
+                                    case .failure, .empty:
+                                        ZStack {
+                                            Color.gray.opacity(0.2)
+                                            Text("MusicBrainz")
+                                                .font(.caption2)
+                                                .multilineTextAlignment(.center)
+                                        }
+                                        .frame(width: 100, height: 100)
+                                    @unknown default:
+                                        Color.clear.frame(width: 100, height: 100)
+                                    }
+                                }
+                                .onTapGesture {
+                                    if let url = URL(string: song.musicbrainzURL) {
+                                        NSWorkspace.shared.open(url)
+                                    }
+                                }
+                            }
+                        }
+                        .onChange(of: vm.kexpSongs) { _ in
+                            if let firstSong = vm.kexpSongs.first {
+                                proxy.scrollTo(firstSong.id, anchor: .top)
+                            }
+                        }
+                        .onAppear {
+                            Task {
+                                await vm.populateKEXPSongs()
+                            }
+                            if let firstSong = vm.kexpSongs.first {
+                                proxy.scrollTo(firstSong.id, anchor: .top)
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+    
+    private func switchStream(to station: Station) {
+        let streamURL: URL?
+        let streamName: String
+        switch station {
+        case .kcrw:
+            streamURL = Constants.Urls.kcrwStream
+            streamName = "kcrw"
+        case .kexp:
+            streamURL = Constants.Urls.kexpStream
+            streamName = "kexp"
+        }
+        
+        onStreamChange?(streamName)
+        
+        if let url = streamURL {
+            let playerItem = AVPlayerItem(url: url)
+            vm.audioPlayer.replaceCurrentItem(with: playerItem)
+            vm.audioPlayer.play()
         }
     }
 }

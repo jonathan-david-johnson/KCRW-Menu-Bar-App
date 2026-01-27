@@ -32,6 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     private var songNameScrollIndex: Int = 0
     private var isScrollingSongTitle: Bool = false
     private var scrollTask: Task<Void, Never>?
+    private var currentStream: String = "kcrw" // Track which stream is playing
     
     @MainActor
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -59,9 +60,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             self.popover = NSPopover()
             self.popover.contentSize = NSSize(width: 300, height: 300)
             self.popover.behavior = .transient
-            self.popover.contentViewController = NSHostingController(rootView: ContentView(vm: self.songListVM, onStop: { [weak self] in
-                self?.popover.performClose(nil)
-            }))
+            self.popover.contentViewController = NSHostingController(rootView: ContentView(
+                vm: self.songListVM,
+                onStop: { [weak self] in
+                    self?.popover.performClose(nil)
+                },
+                onStreamChange: { [weak self] stream in
+                    self?.currentStream = stream
+                }
+            ))
         }
         
         
@@ -118,13 +125,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         func updateRegularly() async {
             print("🎵 KCRW App: Updating song list...")
             await self.songListVM.populateSongs()
+            await self.songListVM.populateKEXPSongs()
             
-            if (self.songListVM.isPlaying && !self.songListVM.songs.isEmpty) {
-                if (self.songListVM.songs[0].title != "") {
-                    let song = self.songListVM.songs[0]
-                    self.songName = song.title + " by " + song.artist
-                } else {
-                    self.songName = self.songListVM.songs[0].artist
+            if (self.songListVM.isPlaying) {
+                if currentStream == "kcrw" && !self.songListVM.songs.isEmpty {
+                    if (self.songListVM.songs[0].title != "") {
+                        let song = self.songListVM.songs[0]
+                        self.songName = song.title + " by " + song.artist
+                    } else {
+                        self.songName = self.songListVM.songs[0].artist
+                    }
+                } else if currentStream == "kexp" && !self.songListVM.kexpSongs.isEmpty {
+                    if (self.songListVM.kexpSongs[0].title != "") {
+                        let song = self.songListVM.kexpSongs[0]
+                        self.songName = song.title + " by " + song.artist
+                    } else {
+                        self.songName = self.songListVM.kexpSongs[0].artist
+                    }
                 }
                 statusItem.button!.image = nil
             } else {

@@ -14,6 +14,7 @@ class SongListViewModel: ObservableObject {
     
     @Published var isPlaying: Bool = false;
     @Published var songs: [SongViewModel] = []
+    @Published var kexpSongs: [KEXPSongViewModel] = []
     @Published var audioPlayer: AVPlayer = AVPlayer();
     
     func populateSongs() async {
@@ -21,6 +22,15 @@ class SongListViewModel: ObservableObject {
         do {
             let songsResp = try await Webservice().getSongs(url: Constants.Urls.latestSongs!)
             self.songs = songsResp.map(SongViewModel.init);
+        } catch {
+            print(error)
+        }
+    }
+    
+    func populateKEXPSongs() async {
+        do {
+            let songsResp = try await Webservice().getKEXPSongs(url: Constants.Urls.kexpPlays!)
+            self.kexpSongs = songsResp.map(KEXPSongViewModel.init);
         } catch {
             print(error)
         }
@@ -120,4 +130,47 @@ struct SongViewModel: Equatable {
         }
     }
     
+}
+
+struct KEXPSongViewModel: Equatable {
+    private var song: KEXPSong
+    
+    init(song: KEXPSong) {
+        self.song = song
+    }
+    
+    static func == (lhs: KEXPSongViewModel, rhs: KEXPSongViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    var id: Int {
+        return song.id ?? -1
+    }
+    
+    var title: String {
+        return song.song ?? ""
+    }
+    
+    var artist: String {
+        return song.artist ?? ""
+    }
+    
+    var album: String {
+        return song.album ?? ""
+    }
+    
+    var albumImage: String {
+        return song.thumbnail_uri ?? song.image_uri ?? ""
+    }
+    
+    var label: String {
+        return song.labels?.first ?? ""
+    }
+    
+    var musicbrainzURL: String {
+        if let releaseId = song.release_id {
+            return "https://musicbrainz.org/release/\(releaseId)"
+        }
+        return ""
+    }
 }
