@@ -9,6 +9,48 @@ This is a native macOS SwiftUI application that lives in the menu bar, allowing 
 - View the current song and recently played tracks
 - Control playback (start/stop) from the menu bar
 
+## Building and Installing
+
+### Quick Build (Recommended for Development)
+
+1. **Open the project**:
+   ```bash
+   open "KCRW MenuBar Player.xcodeproj"
+   ```
+
+2. **Build and run**:
+   - In Xcode, select "My Mac" as destination
+   - Click the Play button (▶️) or press `Cmd+R`
+   - The app will launch immediately
+
+3. **Install to Applications folder**:
+   - While the app is running, right-click the app icon in the Dock
+   - Select **Options → Show in Finder**
+   - Copy the `.app` file to `/Applications`
+
+### Alternative: Build from Menu
+
+1. In Xcode, select "My Mac" as destination
+2. Click **Product → Build** (or `Cmd+B`)
+3. Click **Product → Show Build Folder in Finder**
+4. Navigate to `Products/Debug/`
+5. Drag `KCRW MenuBar Player.app` to your Applications folder
+
+### Archive for Distribution
+
+1. In Xcode, select "My Mac" as destination
+2. Choose **Product → Archive** from the menu
+3. Wait for the build to complete
+4. In the Organizer window (**Window → Organizer** or `Cmd+Shift+Option+O`):
+   - Click the **Archives** tab
+   - Select your archive
+   - Click **Distribute App**
+   - Select **Copy App**
+   - Choose a location to save the `.app` file
+5. Drag the `.app` file to `/Applications`
+
+**Note**: If you get security warnings when launching, go to **System Settings → Privacy & Security** and click "Open Anyway"
+
 ## Architecture
 
 ### App Structure (MVVM Pattern)
