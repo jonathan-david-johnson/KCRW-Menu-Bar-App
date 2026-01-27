@@ -50,8 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 statusButton.image = resizedImage
                 print("🎵 KCRW App: Image loaded and resized to 50%")
             }
-            statusButton.title = "KCRW" // Fallback text
-            print("🎵 KCRW App: Button title set to: \(statusButton.title)")
+            statusButton.title = ""
             print("🎵 KCRW App: Image set: \(statusButton.image != nil)")
             
             statusButton.action = #selector(togglePopover)
@@ -64,6 +63,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         
         func scrollThroughSongTitle() async {
+            guard !songName.isEmpty else { return }
+            
             if let button = statusItem.button {
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .center
@@ -74,7 +75,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                     .baselineOffset: 0
                 ]
                 
-                button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
+                // If 9 chars or less, just show it
+                if songName.count <= 9 {
+                    button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
+                    return
+                }
+                
+                // Scroll through the text
+                let maxIndex = songName.count - 9
+                for i in 0...maxIndex {
+                    let startIndex = songName.index(songName.startIndex, offsetBy: i)
+                    let endIndex = songName.index(startIndex, offsetBy: 9)
+                    let substring = String(songName[startIndex..<endIndex])
+                    
+                    button.attributedTitle = NSAttributedString(string: substring, attributes: attributes)
+                    
+                    // Hold at the start for 1 second before scrolling
+                    if i == 0 {
+                        try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    } else {
+                        try? await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
+                    }
+                }
+                
+                // Hold at the end for 1 second
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                
+                // Restart the scroll
+                await scrollThroughSongTitle()
             }
         }
         
