@@ -12,11 +12,13 @@ import AVFoundation
 struct ContentView: View {
     
     @StateObject private var vm: SongListViewModel
+    var onStop: (() -> Void)?
     
 //    @State var isPlaying = false
     
-    init(vm: SongListViewModel) {
+    init(vm: SongListViewModel, onStop: (() -> Void)? = nil) {
         self._vm = StateObject(wrappedValue: vm)
+        self.onStop = onStop
         
         do {
             let playerItem = AVPlayerItem(url: Constants.Urls.kcrwStream!)
@@ -33,6 +35,7 @@ struct ContentView: View {
                     Button(action: {
                         vm.isPlaying = false
                         vm.audioPlayer.replaceCurrentItem(with: nil)
+                        onStop?()
                     }) { Text("Stop") }
                     Button("Quit") {
                         NSApplication.shared.terminate(nil)

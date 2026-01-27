@@ -59,7 +59,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             self.popover = NSPopover()
             self.popover.contentSize = NSSize(width: 300, height: 300)
             self.popover.behavior = .transient
-            self.popover.contentViewController = NSHostingController(rootView: ContentView(vm: self.songListVM))
+            self.popover.contentViewController = NSHostingController(rootView: ContentView(vm: self.songListVM, onStop: { [weak self] in
+                self?.popover.performClose(nil)
+            }))
         }
         
         
@@ -127,6 +129,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 statusItem.button!.image = nil
             } else {
                 self.songName = "";
+                statusItem.button!.title = ""
+                statusItem.button!.attributedTitle = NSAttributedString(string: "")
                 if let image = NSImage(named: "KCRW_logo_black") {
                     let resizedImage = NSImage(size: NSSize(width: image.size.width * 0.5, height: image.size.height * 0.5))
                     resizedImage.lockFocus()
