@@ -125,6 +125,45 @@ KCRW MenuBar Player/
 - **Response**: JSON array of song objects
 - **Update Frequency**: Polled every 30 seconds when app is running
 
+#### Example API Response
+```json
+{
+  "affiliateLinkiPhone": "https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?at=1010l3dvo&media=music&term=%22Rickie+Lee+Jones%22+%22The+Last+Chance+Texaco%22",
+  "affiliateLinkiTunes": "https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?at=1010l3dvo&media=music&term=%22Rickie+Lee+Jones%22+%22The+Last+Chance+Texaco%22",
+  "affiliateLinkSpotify": "spotify:search:Rickie+Lee+Jones+The+Last+Chance+Texaco",
+  "affiliateLinkAmazon": "http://www.amazon.com/exec/obidos/external-search?keyword=Rickie+Lee+Jones+The+Last+Chance+Texaco&mode=digital-music&tag=kcco04-20",
+  "itunes_id": 1421847342,
+  "itunes_time": 245467,
+  "itunes_url": "https://music.apple.com/us/album/the-last-chance-texaco/1421846869?i=1421847342&uo=4&itscg=30200&itsct=kcrw_music&at=1010l3dvo",
+  "spotify_id": null,
+  "spotify_preview": null,
+  "program_id": "e24",
+  "program_start": "03:00",
+  "program_end": "06:00",
+  "program_title": "Eclectic 24",
+  "host": "",
+  "credits": null,
+  "guest": null,
+  "title": "The Last Chance Texaco",
+  "artist": "Rickie Lee Jones",
+  "album": "Rickie Lee Jones",
+  "label": "TOSOD",
+  "albumImage": "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/21/c3/06/21c3064e-411c-8280-e951-8285eb167f4c/source/100x100bb.jpg",
+  "albumImageLarge": "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/21/c3/06/21c3064e-411c-8280-e951-8285eb167f4c/source/100x100bb.jpg",
+  "year": null,
+  "artist_url": "http://www.rickieleejones.com/",
+  "channel": "Music",
+  "offset": 9521,
+  "time": "05:38 AM",
+  "date": "2026-01-27",
+  "datetime": "2026-01-27T05:38:41-08:00",
+  "comments": "",
+  "play_id": 997040
+}
+```
+
+**Note**: The `Song` model only decodes a subset of these fields: `title`, `artist`, `album`, `label`, `albumImage`, `year`, `artist_url`, `affiliateLinkSpotify`, `play_id`
+
 ### Audio Stream
 - **URL**: `https://streams.kcrw.com/e24_mp3`
 - **Format**: MP3 stream
