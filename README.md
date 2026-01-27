@@ -1,13 +1,16 @@
 # KCRW Menu Bar App
 
-A macOS menu bar application that streams KCRW radio and displays currently playing songs.
+A macOS menu bar application that streams multiple radio stations and displays currently playing songs.
 
 ## Overview
 
 This is a native macOS SwiftUI application that lives in the menu bar, allowing users to:
 - Stream KCRW radio (89.9 FM Los Angeles)
-- View the current song and recently played tracks
+- Stream KEXP radio (90.3 FM Seattle)
+- Play NPR News Now hourly updates
+- View current songs and recently played tracks for KCRW and KEXP
 - Control playback (start/stop) from the menu bar
+- Skip forward in NPR News with time remaining display
 
 ## Building and Installing
 
@@ -75,39 +78,49 @@ KCRW MenuBar Player/
 #### 1. **KCRW_MenuBar_PlayerApp.swift**
 - **Main App**: `@main` entry point, minimal Settings scene
 - **AppDelegate**: Core application logic
-  - Creates `NSStatusItem` in menu bar with KCRW logo
+  - Creates `NSStatusItem` in menu bar with logo
   - Manages `NSPopover` for dropdown UI
-  - Polls KCRW API every 30 seconds for song updates
-  - Updates menu bar title with current song when playing
+  - Polls KCRW and KEXP APIs every 30 seconds for song updates
+  - Updates menu bar title with current song when playing (with scrolling animation)
   - Handles play/stop state and audio player initialization
+  - Tracks current stream (KCRW, KEXP, or NPR)
 
 #### 2. **ContentView.swift**
 - SwiftUI view displayed in the popover
-- Shows Stop/Quit buttons when playing
+- **Stream Selection**: Dropdown to choose KCRW, KEXP, or NPR
+- **Tracklist Tabs**: Segmented picker to view KCRW or KEXP tracklists
+- **NPR Controls**: Skip forward button showing time remaining (when NPR is playing)
+- **Stop/Quit buttons**: Control playback
 - Displays scrollable list of recent songs with:
   - Song title (bold)
   - Artist name (dimmed)
   - Album name (dimmed)
-- Initializes audio player with KCRW stream URL
+  - Album art (clickable - opens Spotify for KCRW, MusicBrainz for KEXP)
 
 #### 3. **SongListViewModel.swift**
 - `@MainActor` class managing app state
 - **Published properties**:
   - `isPlaying: Bool` - playback state
-  - `songs: [SongViewModel]` - list of recent songs
+  - `songs: [SongViewModel]` - list of recent KCRW songs
+  - `kexpSongs: [KEXPSongViewModel]` - list of recent KEXP songs
   - `audioPlayer: AVPlayer` - audio player instance
 - **Methods**:
-  - `populateSongs()` - fetches latest songs from API
+  - `populateSongs()` - fetches latest KCRW songs (10 on first load, then 1 per update)
+  - `populateKEXPSongs()` - fetches latest KEXP songs (10 on first load, then 1 per update)
 - **SongViewModel**: Wrapper struct providing safe access to optional Song properties
+- **KEXPSongViewModel**: Wrapper for KEXP songs with MusicBrainz URL generation
 
 #### 4. **Song.swift**
-- `Decodable` struct matching KCRW API response
-- **Properties**: `title`, `artist`, `album`, `label`, `albumImage`, `year`, `artist_url`, `affiliateLinkSpotify`, `play_id`
-- All properties are optional strings/int
+- **Song**: `Decodable` struct matching KCRW API response
+  - Properties: `title`, `artist`, `album`, `label`, `albumImage`, `year`, `artist_url`, `affiliateLinkSpotify`, `play_id`
+- **KEXPSong**: `Decodable` struct matching KEXP API response
+  - Properties: `id`, `song`, `artist`, `album`, `thumbnail_uri`, `image_uri`, `labels`, `release_id`, `play_type`
+- **KEXPResponse**: Wrapper for paginated KEXP API results
 
 #### 5. **Webservice.swift**
-- Handles HTTP requests to KCRW API
+- Handles HTTP requests to KCRW and KEXP APIs
 - `getSongs(url:)` - async function returning `[Song]`
+- `getKEXPSongs(url:)` - async function returning `[KEXPSong]` (filters out airbreaks)
 - Uses `URLSession` with basic error handling
 - Throws `NetworkError.invalidResponse` on non-200 status
 
@@ -115,6 +128,8 @@ KCRW MenuBar Player/
 - **API Endpoints**:
   - `latestSongs`: `https://tracklist-api.kcrw.com/Music/all/1?page_size=10`
   - `kcrwStream`: `https://streams.kcrw.com/e24_mp3`
+  - `kexpStream`: `https://kexp.streamguys1.com/kexp160.aac`
+  - `kexpPlays`: `https://api.kexp.org/v2/plays/?limit=10`
 
 ## Data Flow
 
@@ -125,18 +140,28 @@ KCRW MenuBar Player/
 
 2. **User Clicks Menu Bar Icon**:
    - `togglePopover()` called
-   - If not playing: sets `isPlaying = true`, initializes `AVPlayer`, starts stream
+   - If not playing: sets `isPlaying = true`
    - Shows popover with `ContentView`
+   - ContentView starts playing the selected stream (KCRW, KEXP, or NPR)
 
-3. **Background Updates** (every 30s):
-   - Calls `songListVM.populateSongs()` → fetches from API
-   - If playing: updates menu bar title with current song
+3. **Stream Selection**:
+   - User selects stream from dropdown (KCRW, KEXP, or NPR)
+   - For KCRW/KEXP: Plays live stream URL
+   - For NPR: Fetches latest episode from RSS feed and plays MP3
+   - Menu bar text updates immediately to show current stream info
+
+4. **Background Updates** (every 30s):
+   - Calls `songListVM.populateSongs()` and `populateKEXPSongs()`
+   - First load: fetches 10 tracks; subsequent loads: fetches 1 track
+   - New tracks prepended to list, keeping max 10 tracks
+   - If playing: updates menu bar title with current song (scrolling animation)
    - If stopped: shows KCRW logo
 
-4. **User Stops Playback**:
+5. **User Stops Playback**:
    - Stop button sets `isPlaying = false`
    - Clears audio player
    - Menu bar reverts to logo
+   - Selected stream is preserved for next play
 
 ## Technical Details
 
@@ -206,18 +231,30 @@ KCRW MenuBar Player/
 
 **Note**: The `Song` model only decodes a subset of these fields: `title`, `artist`, `album`, `label`, `albumImage`, `year`, `artist_url`, `affiliateLinkSpotify`, `play_id`
 
-### Audio Stream
-- **URL**: `https://streams.kcrw.com/e24_mp3`
-- **Format**: MP3 stream
+### KEXP Tracklist API
+- **Endpoint**: `https://api.kexp.org/v2/plays/?limit=10`
+- **Response**: JSON with paginated results
+- **Update Frequency**: Polled every 30 seconds when app is running
+- **Filtering**: Filters out `play_type === "airbreak"` entries to show only actual songs
+
+### NPR News Now
+- **RSS Feed**: `https://feeds.npr.org/500005/podcast.xml`
+- **Format**: Hourly 5-minute news updates as MP3 files
+- **Playback**: Fetches latest episode URL from RSS feed and plays directly
+- **Controls**: Skip forward 10 seconds with time remaining display
+
+### Audio Streams
+- **KCRW**: `https://streams.kcrw.com/e24_mp3` (MP3 stream)
+- **KEXP**: `https://kexp.streamguys1.com/kexp160.aac` (160K AAC stream)
+- **NPR**: Dynamic MP3 URL from RSS feed
 - **Player**: AVPlayer with AVPlayerItem
 
 ## Known Limitations
 
-1. **Song Title Scrolling**: `scrollThroughSongTitle()` function exists but only sets full title (no actual scrolling animation implemented)
-2. **Album Images**: `AsyncImage` code commented out in ContentView
-3. **UI Only Shows When Playing**: ContentView body returns empty view when `isPlaying = false`
-4. **No Error UI**: Network errors only logged to console
-5. **Fixed Polling**: 30-second update interval is hardcoded
+1. **No NPR Tracklist**: NPR News Now doesn't show a tracklist (just placeholder text)
+2. **UI Only Shows When Playing**: ContentView body returns empty view when `isPlaying = false`
+3. **No Error UI**: Network errors only logged to console
+4. **Fixed Polling**: 30-second update interval is hardcoded
 
 ## Testing Structure
 
