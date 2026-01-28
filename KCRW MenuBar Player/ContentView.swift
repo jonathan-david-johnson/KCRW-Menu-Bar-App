@@ -15,7 +15,6 @@ struct ContentView: View {
     @State private var selectedStation: Station = .kcrw
     @State private var selectedStream: Station = .kcrw
     @State private var timeRemaining: String = "0:00"
-    @State private var hasAppeared: Bool = false
     var onStop: (() -> Void)?
     var onStreamChange: ((String) -> Void)?
     
@@ -205,13 +204,7 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .onAppear {
-                if !hasAppeared {
-                    hasAppeared = true
-                    vm.isPlaying = true
-                    switchStream(to: selectedStream)
-                }
-            }
+            
     }
     
     private func switchStream(to station: Station) {

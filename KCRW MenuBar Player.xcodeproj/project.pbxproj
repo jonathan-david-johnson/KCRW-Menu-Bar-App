@@ -14,7 +14,7 @@
 		8C1FEB0E28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB0D28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift */; };
 		8C1FEB1028ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB0F28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift */; };
 		8C1FEB2028ECB209006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEAF128ECA8DF006BF71C /* KCRW_MenuBar_PlayerApp.swift */; };
-		8C1FEB2328ECB37F006BF71C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2228ECB37F006BF71C /* Song.swift */; };
+		8C1FEB2328ECB37F006BF71C /* KCRWSong.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2228ECB37F006BF71C /* KCRWSong.swift */; };
 		8C1FEB2628ECB3BA006BF71C /* Webservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2528ECB3BA006BF71C /* Webservice.swift */; };
 		8C1FEB2928ECB459006BF71C /* SongListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2828ECB459006BF71C /* SongListViewModel.swift */; };
 		8C1FEB2C28ECB490006BF71C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1FEB2B28ECB490006BF71C /* Constants.swift */; };
@@ -51,7 +51,7 @@
 		8C1FEB0928ECA8E2006BF71C /* KCRW MenuBar PlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KCRW MenuBar PlayerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C1FEB0D28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KCRW_MenuBar_PlayerUITests.swift; sourceTree = "<group>"; };
 		8C1FEB0F28ECA8E2006BF71C /* KCRW_MenuBar_PlayerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KCRW_MenuBar_PlayerUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		8C1FEB2228ECB37F006BF71C /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		8C1FEB2228ECB37F006BF71C /* KCRWSong.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KCRWSong.swift; sourceTree = "<group>"; };
 		8C1FEB2528ECB3BA006BF71C /* Webservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Webservice.swift; sourceTree = "<group>"; };
 		8C1FEB2828ECB459006BF71C /* SongListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongListViewModel.swift; sourceTree = "<group>"; };
 		8C1FEB2B28ECB490006BF71C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -147,7 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				2DB46C812F294A1B00DEA46A /* KEXPSong.swift */,
-				8C1FEB2228ECB37F006BF71C /* Song.swift */,
+				8C1FEB2228ECB37F006BF71C /* KCRWSong.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -313,7 +313,7 @@
 				8C1FEB2028ECB209006BF71C /* KCRW_MenuBar_PlayerApp.swift in Sources */,
 				8C1FEB2628ECB3BA006BF71C /* Webservice.swift in Sources */,
 				8C1FEB2D28ECB5ED006BF71C /* ContentView.swift in Sources */,
-				8C1FEB2328ECB37F006BF71C /* Song.swift in Sources */,
+				8C1FEB2328ECB37F006BF71C /* KCRWSong.swift in Sources */,
 				2DB46C822F294A1B00DEA46A /* KEXPSong.swift in Sources */,
 				8C1FEB2928ECB459006BF71C /* SongListViewModel.swift in Sources */,
 				8C1FEB2C28ECB490006BF71C /* Constants.swift in Sources */,
