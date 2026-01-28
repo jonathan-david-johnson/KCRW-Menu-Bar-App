@@ -39,7 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         print("🎵 KCRW App: applicationDidFinishLaunching called")
     
         self.songListVM = SongListViewModel()
-        statusItem = NSStatusBar.system.statusItem(withLength: 60)
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         print("🎵 KCRW App: Status item created: \(statusItem != nil)")
         
         if let statusButton = statusItem.button {
@@ -58,7 +58,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             statusButton.action = #selector(togglePopover)
             
             self.popover = NSPopover()
-            self.popover.contentSize = NSSize(width: 300, height: 300)
+            self.popover.contentSize = NSSize(width: 330, height: 300)
             self.popover.behavior = .transient
             self.popover.contentViewController = NSHostingController(rootView: ContentView(
                 vm: self.songListVM,
@@ -97,7 +97,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             if popover.isShown {
                 self.popover.performClose(nil)
             } else {
-                popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+                // Anchor to the right edge of the button to prevent jumping
+                let rect = NSRect(x: button.bounds.maxX - 330, y: button.bounds.minY, width: 330, height: button.bounds.height)
+                popover.show(relativeTo: rect, of: button, preferredEdge: NSRectEdge.minY)
             }
         }
         
@@ -110,6 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         if let button = statusItem.button {
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.alignment = .center
+            paragraphStyle.lineBreakMode = .byClipping
             
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: NSFont.systemFont(ofSize: 10),
@@ -117,20 +120,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 .baselineOffset: 0
             ]
             
-            // If 9 chars or less, just show it
-            if songName.count <= 9 {
+            // If 20 chars or less, just show it
+            if songName.count <= 20 {
                 button.attributedTitle = NSAttributedString(string: songName, attributes: attributes)
                 return
             }
             
             // Scroll through the text
-            let maxIndex = songName.count - 9
+            let maxIndex = songName.count - 20
             for i in 0...maxIndex {
                 // Check if task was cancelled
                 if Task.isCancelled { return }
                 
                 let startIndex = songName.index(songName.startIndex, offsetBy: i)
-                let endIndex = songName.index(startIndex, offsetBy: 9)
+                let endIndex = songName.index(startIndex, offsetBy: 20)
                 let substring = String(songName[startIndex..<endIndex])
                 
                 button.attributedTitle = NSAttributedString(string: substring, attributes: attributes)
@@ -174,10 +177,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 self.songName = "NPR News Now"
             }
             statusItem.button!.image = nil
+            statusItem.length = 100
         } else {
             self.songName = "";
             statusItem.button!.title = ""
             statusItem.button!.attributedTitle = NSAttributedString(string: "")
+            statusItem.length = NSStatusItem.variableLength
             if let image = NSImage(named: "KCRW_logo_white") {
                 let resizedImage = NSImage(size: NSSize(width: image.size.width * 1, height: image.size.height * 1))
                 resizedImage.lockFocus()

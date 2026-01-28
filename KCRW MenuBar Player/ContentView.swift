@@ -53,10 +53,19 @@ struct ContentView: View {
                     if selectedStream == .npr {
                         Button(action: {
                             skipForward()
-                        }) { Text(timeRemaining) }
+                        }) { 
+                            Text(timeRemaining)
+                                .frame(width: 35)
+                        }
                         .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
                             updateTimeRemaining()
                         }
+                    }
+                    
+                    if selectedStream == .npr {
+                        Button(action: {
+                            skipBackward()
+                        }) { Text("<<") }
                     }
                     
                     Button(action: {
@@ -65,14 +74,25 @@ struct ContentView: View {
                         Image(systemName: vm.isPlaying ? "stop.fill" : "play.fill")
                             .font(.system(size: 10))
                     }
-                    Button("Quit") {
+                    
+                    if selectedStream == .npr {
+                        Button(action: {
+                            skipForward()
+                        }) { Text(">>") }
+                    }
+                    
+                    Button(action: {
                         NSApplication.shared.terminate(nil)
-                    }.keyboardShortcut("q")
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 10))
+                    }
+                    .keyboardShortcut("q")
                 }
                 .padding(.top, 8)
                 .padding(.horizontal, 8)
                 
-                Picker("Station", selection: $selectedStation) {
+                Picker("", selection: $selectedStation) {
                     Text("KCRW").tag(Station.kcrw)
                     Text("KEXP").tag(Station.kexp)
                 }
@@ -243,6 +263,12 @@ struct ContentView: View {
         } catch {
             print("Error fetching NPR News: \(error)")
         }
+    }
+    
+    private func skipBackward() {
+        let currentTime = vm.audioPlayer.currentTime()
+        let newTime = CMTimeSubtract(currentTime, CMTime(seconds: 10, preferredTimescale: 1))
+        vm.audioPlayer.seek(to: newTime)
     }
     
     private func skipForward() {
