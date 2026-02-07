@@ -70,7 +70,7 @@ struct ContentView: View {
                     Button(action: {
                         togglePlayback()
                     }) {
-                        Image(systemName: vm.isPlaying ? "stop.fill" : "play.fill")
+                        Image(systemName: selectedStream == .npr && vm.isPlaying ? "pause.fill" : vm.isPlaying ? "stop.fill" : "play.fill")
                             .font(.system(size: 10))
                     }
                     
@@ -298,11 +298,23 @@ struct ContentView: View {
     
     private func togglePlayback() {
         if vm.isPlaying {
+            if selectedStream == .npr {
+                // Pause NPR instead of stopping
+                vm.audioPlayer.pause()
+            } else {
+                // Stop other streams completely
+                vm.audioPlayer.replaceCurrentItem(with: nil)
+            }
             vm.isPlaying = false
-            vm.audioPlayer.replaceCurrentItem(with: nil)
         } else {
+            if selectedStream == .npr && vm.audioPlayer.currentItem != nil {
+                // Resume NPR from where we left off
+                vm.audioPlayer.play()
+            } else {
+                // Start playing from beginning
+                switchStream(to: selectedStream)
+            }
             vm.isPlaying = true
-            switchStream(to: selectedStream)
         }
         onStop?()
     }
