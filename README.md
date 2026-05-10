@@ -2,6 +2,8 @@
 
 A macOS menu bar application that streams multiple radio stations and displays currently playing songs.
 
+![KCRW Menu Bar App screenshot](screenshot.png)
+
 ## Overview
 
 This is a native macOS SwiftUI application that lives in the menu bar, allowing users to:
