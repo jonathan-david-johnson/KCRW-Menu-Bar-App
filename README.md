@@ -3,7 +3,7 @@
 A macOS menu bar application that streams multiple radio stations and displays currently playing songs.
 
 <p align="center">
-  <img src="screenshot.png" width="376" />
+  <img src="screenshot.png" width="526" />
 </p>
 
 ## Overview
