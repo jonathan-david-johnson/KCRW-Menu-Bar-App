@@ -2,7 +2,9 @@
 
 A macOS menu bar application that streams multiple radio stations and displays currently playing songs.
 
-![KCRW Menu Bar App screenshot](screenshot.png)
+<p align="center">
+  <img src="screenshot.png" width="376" />
+</p>
 
 ## Overview
 
